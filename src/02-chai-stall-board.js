@@ -1,3 +1,6 @@
+import { timingSafeEqual } from "crypto";
+import { domainToUnicode } from "url";
+
 /**
  * 🍵 Chai Stall Board - getElementById, querySelector, textContent
  *
@@ -65,17 +68,52 @@
  *   // => "cutting" (cheapest chai gets "cheapest" class)
  */
 export function updateChaiPrice(document, chaiType, newPrice) {
-  // Your code here
+  if(newPrice<=0 ||typeof(newPrice) !=='number' || chaiType.length===0) return false;
+  let target = document.getElementById(`price-${chaiType}`)
+  if(target){
+    target.textContent = `₹${newPrice}`;
+    return true;
+  }
+  return false;  
 }
 
 export function getChaiPrice(document, chaiType) {
-  // Your code here
+  const target = document.querySelector(`#price-${chaiType}`)
+  if(target){
+    return parseInt(target.textContent.slice(1))
+  }
+  return null;
 }
 
 export function updateStallName(document, newName) {
-  // Your code here
+  if(typeof newName!=='string' || newName.length===0) return null;
+  const target = document.querySelector(".stall-name");
+  if(target){
+    const oldText = target.textContent;
+    target.textContent = newName;
+    return oldText;
+  }
+  return null;
 }
 
 export function highlightCheapestChai(document) {
-  // Your code here
+  let allTargets = document.querySelectorAll(".chai-price");
+  if(allTargets.length===0) return null;
+  let minPrice = Infinity;
+  let cheapestElement = null;
+  allTargets.forEach(element => {
+    if(element.classList.contains("cheapest")) element.classList.remove("cheapest")
+    let price = parseInt(element.textContent.slice(1))
+    if (price<minPrice){
+      minPrice = price
+      cheapestElement = element
+    }
+  });
+
+  if(cheapestElement){
+    cheapestElement.classList.add("cheapest")
+    return cheapestElement.getAttribute("data-chai")
+  }
+
+
 }
